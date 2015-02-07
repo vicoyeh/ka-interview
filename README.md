@@ -17,4 +17,4 @@ npm install
 
 node server.js
 
-(now the site will be up at http://localhost:8080)
+(the site should be up at http://localhost:8080)
