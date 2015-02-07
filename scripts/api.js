@@ -8,18 +8,28 @@ testList=[];
  * Return a list of missing functionalities
  * @param {Object} ast 
  * @param {Object} testMap
+ * @param {Boolean} whiteListTest
  * @return {Object} MissingMap
  */
-function detectExistence(ast, testMap) {
+function detectExistence(ast, testMap, whiteListTest) {
 	var list=[];
 	// iterate through every node and check its type
 	detectExistenceBST(ast, testMap);
 
 	//append missing functionalities to the return list
-	for (var e in testMap) {
-	  	if (testMap.hasOwnProperty(e) && !testMap[e]) {
-	    	list.push(e);
-	  	}
+	//true if testing a whitelist of specific functionality
+	if (whiteListTest) {
+		for (var e in testMap) {
+		  	if (testMap.hasOwnProperty(e) && !testMap[e]) {
+		    	list.push(e);
+		  	}
+		}
+	} else {
+		for (var e in testMap) {
+		  	if (testMap.hasOwnProperty(e) && testMap[e]) {
+		    	list.push(e);
+		  	}
+		}	
 	}
 
 	return list;
@@ -83,7 +93,6 @@ function convertToReadable(testType) {
 	return returnMe;
 }
 
-
 //list of api
 var api = {
 
@@ -92,25 +101,21 @@ var api = {
 	 * @param {String} content 
 	 * @return {String} feedback
 	 */
-	checkWhitelist: function(content, UnitTestList) {
+	checkWhitelist: function(content, unitTestList) {
 		var tokens = [], feedback = "";
-		testList=UnitTestList;
+		testList=unitTestList;
 		var ast = acorn.parse(content, {
 		    onToken: tokens
 		});
 
-		/**
-		* Convert testList into a map, where the key is the test case name and the value is boolean
-		*/
+		// Convert testList into a map, where the key is the test case name and the value is boolean
 		var testMap = {}, missingList = [];
 		//initialize the map, set all the values to false
 		for (i=0; i<testList.length; i++) {
 			testMap[testList[i]]=false;
 		}
 
-		missingList = detectExistence(ast, testMap);
-
-
+		missingList = detectExistence(ast, testMap, true);
 		//append the missing functionalities to feedback
 		if (missingList.length) {
 			feedback = "This program MUST use a ";
@@ -119,7 +124,7 @@ var api = {
 				feedback += convertToReadable(missingList[i]) + " and a ";
 			}
 
-			feedback += convertToReadable(missingList[missingList.length-1]);
+			feedback += convertToReadable(missingList[missingList.length-1]) + '.';
 		}
 
 		//if no missing functionality
@@ -136,8 +141,39 @@ var api = {
 	 * @param {String} content 
 	 * @return {String} feedback
 	 */
-	checkBlacklist: function(content, functionList) {
+	checkBlacklist: function(content, unitTestList) {
+		var tokens = [], feedback = "";
+		testList=unitTestList;
+		var ast = acorn.parse(content, {
+		    onToken: tokens
+		});
 
+		//Convert testList into a map, where the key is the test case name and the value is boolean
+		var testMap = {}, presentList = [];
+		//initialize the map, set all the values to false
+		for (i=0; i<testList.length; i++) {
+			testMap[testList[i]]=false;
+		}
+
+		presentList = detectExistence(ast, testMap, false);
+		//append the missing functionalities to feedback
+		if (presentList.length) {
+			feedback = "This program MUST NOT use a ";
+
+			for (i=0; i<presentList.length-1; i++) {
+				feedback += convertToReadable(presentList[i]) + " and a ";
+			}
+
+			feedback += convertToReadable(presentList[presentList.length-1]) + '.';
+		}
+
+		//if no missing functionality
+		if (!feedback) {
+			feedback="success";
+		}
+
+		console.log(feedback);
+		return feedback;
 	},
 
 	/**

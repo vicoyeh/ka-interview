@@ -12,20 +12,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
 <!--SRIPTS END-->
-
 </head>
 
 <body>
 
 <!--text editor begin-->
 <div id="editor">
-<!-- for(i=0;i<10;i++) {
-    console.log(1);
-}
-
- -->
-for(i=0;i<1;i++){
-	console.log("yo");
+for (i=0;i<1;i++) {
+	console.log(1);
 }
 
 function foo(items) {
@@ -33,9 +27,12 @@ function foo(items) {
     return x;
 }
 </div>
+
+<div id="warning-section">
+	<img src="/img/warning-man.png" width="100px" height="100px"/>
+	<div id="warning-msg"></div>
+</div>
 <!--text editor end-->
-<!--SCRIPTS BEGIN-->
 <script src="/js/editor.js"></script>
-<!--SRIPTS END-->
 </body>
 </html>

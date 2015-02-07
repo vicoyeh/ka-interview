@@ -4,7 +4,6 @@ $(document).ready(function() {
 	editor.setTheme("ace/theme/dawn");
 	editor.getSession().setMode("ace/mode/javascript");
 
-
 	var editCount = 0;
 	/**
 	 * Emitted whenever the document is changed
@@ -22,18 +21,15 @@ $(document).ready(function() {
 
 	// });
 
-
+	$msgBox=$('#warning-section');
 	var content = editor.getValue();
-
 	$.get('/api', {"content":content} , function(data) {
-
-		if (data=='success')	 {
-			
+		if (data=='success') {
+			return;
 		} else {
-
+			$msgBox.show();
+			$msgBox.find('#warning-msg').html(data);
 		}
-
 	});	
-
 });
 	

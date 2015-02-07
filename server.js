@@ -26,6 +26,7 @@ app.get('/api',function(req,res){
 	var content = req.query.content;
 	//make api call
 	var feedback = api.checkWhitelist(content,testList);
+	//var feedback = api.checkBlacklist(content,testList);
 	res.send(feedback);
 });
 
