@@ -12,6 +12,9 @@ You can download the lastest version of NodeJS here: http://nodejs.org/download/
 
 ##Run the app
 cd khan 
+
 npm install
+
 node server.js
+
 (now the site will be up at http://localhost:8080)
