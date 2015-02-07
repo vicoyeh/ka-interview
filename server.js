@@ -21,12 +21,15 @@ app.get('/',function(req,res){
 
 app.get('/api',function(req,res){
 	//an list of functionality
-	var testList = ["VariableDeclaration","ForStatement"];
+	var testList = ["ForStatement","IfStatement"];
 	//user's input
 	var content = req.query.content;
+	
 	//make api call
 	var feedback = api.checkWhitelist(content,testList);
 	//var feedback = api.checkBlacklist(content,testList);
+	//var feedback = api.checkStructure(content,testList);
+	
 	res.send(feedback);
 });
 

@@ -72,7 +72,7 @@ function inFunctionalityList(testType) {
 /**
  * Convert a test type to human readable string 
  * @param {String} testType 
- * @return {String} 
+ * @return {String} returnMe
  */
 function convertToReadable(testType) {
 	var returnMe;
@@ -93,12 +93,50 @@ function convertToReadable(testType) {
 	return returnMe;
 }
 
+/**
+ * Determine the rough structure of the program
+ * @param {Object} ast
+ * @param {Array} list
+ * @return {Boolean}
+ */
+function detectStructure(node, list) {
+	if (inFunctionalityList(node.type)) {
+		list=list.slice(1, list.length);
+	}
+
+	if (!list.length)
+		return true;
+
+	if (typeof node.body === 'undefined' ) {
+		return false;
+	}
+	
+	if (Array.isArray(node.body)) {
+		var i;
+		var tmpList = list;
+		for (i=0;i<node.body.length;i++) {
+			list = tmpList;
+			var child = node.body[i];
+			if (detectStructure(child,list)) {
+				return true;
+			}
+		}
+	} else if (typeof node.body === 'object') {
+		if(detectStructure(node.body,list)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //list of api
 var api = {
 
 	/**
 	 * A whitelist of specific functionality. 
 	 * @param {String} content 
+	 * @param {Array} unitTestList
 	 * @return {String} feedback
 	 */
 	checkWhitelist: function(content, unitTestList) {
@@ -139,6 +177,7 @@ var api = {
 	/**
 	 * A blacklist of specific functionality.
 	 * @param {String} content 
+	 * @param {Array} unitTestList
 	 * @return {String} feedback
 	 */
 	checkBlacklist: function(content, unitTestList) {
@@ -163,7 +202,6 @@ var api = {
 			for (i=0; i<presentList.length-1; i++) {
 				feedback += convertToReadable(presentList[i]) + " and a ";
 			}
-
 			feedback += convertToReadable(presentList[presentList.length-1]) + '.';
 		}
 
@@ -179,13 +217,28 @@ var api = {
 	/**
 	 *Determine the rough structure of the program.
 	 * @param {String} content 
+	 * @param {Array} unitTestList
 	 * @return {String} feedback
 	 */	
-	checkStructure: function(content) {
+	checkStructure: function(content, unitTestList) {
+		var tokens = [], feedback = "";
+		testList=unitTestList;
+		var ast = acorn.parse(content, {
+		    onToken: tokens
+		});
 
+		var pass=detectStructure(ast,testList);
+		if (pass) {
+			feedback="success";
+		} else {
+
+			feedback="There should be a '"+ convertToReadable(unitTestList[0]) + "' and inside of it there should be an '" +  convertToReadable(unitTestList[1]) + "'";
+		}
+
+		console.log(feedback);
+		return feedback;
 	}
 
 };
-
 
 module.exports = api;
